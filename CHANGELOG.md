@@ -31,3 +31,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - These function currently perform some basic parsing and error checking.
 - Added test of goot parses of these files, still should add additional
   testing of error conditions on bad file inputs.
+
+## [0.0.5] - 2023-05-17
+
+### Added
+
+- Added skeleton of plot functions meant to plot a single frame and/or plot a
+  motion track as a figure at some point in time
+- Added skeleton of render functions.  These return an animation object that can be
+  saved as a movie file or other video type.  NOTE: not sure if the animation
+  uses ffmpeg on back end or that is not a dependency anymore.

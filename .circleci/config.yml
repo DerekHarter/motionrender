@@ -30,7 +30,7 @@ jobs:
             sudo apt install -y python3-pip
             sudo pip install pipenv
             pipenv install twine
-            pipenv run twine upload --repository testpypi dist/*
+            pipenv run twine upload --username ${TWINE_USERNAME} --password ${TWINE_PASSWORD} --repository testpypi dist/*
   pypi_publish:
     docker:
       - image: cimg/python:3.11.0
@@ -44,7 +44,7 @@ jobs:
             sudo apt install -y python3-pip
             sudo pip install pipenv
             pipenv install twine
-            pipenv run twine upload dist/*
+            pipenv run twine upload --username ${TWINE_USERNAME} --password ${TWINE_PASSWORD} dist/*
 workflows:
   build_test_publish:
     jobs:

@@ -12,4 +12,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Project setup, build, test, publish framework
 - Added environemnt variables for circlci publish test/publish ci workflow
 
+## [0.0.3] - 2023-05-17
+
+### Added
+
+- Continuing testing ci workflow issues.  In this commit we test correctly
+  updating the version and using a pull request.  We will pull this
+  code to a develop branch.  Whenever a commit is made/pulled to this branch,
+  it should invoke the ci workflow that does a build_test and
+  then does the test_pypi_publish.  We hopefully now have our password
+  issues worked out for twine.
+
 

@@ -12,7 +12,8 @@ jobs:
             sudo apt-get update
             sudo apt install -y python3-pip
             sudo pip install pipenv
-            pipenv install dist/motionrender-0.0.3-py3-none-any.whl
+            pipenv install dist/motionrender-0.0.4-py3-none-any.whl
+            pipenv install pandas
             pipenv install pytest
       - run:
           command: | # Run test suite

@@ -1,0 +1,24 @@
+from setuptools import setup, find_packages
+
+VERSION = '0.0.1'
+DESCRIPTION = 'A motion tracking 3D movier render'
+LONG_DESCRIPTION = 'A package that renders movies from 3D motion tracked data, for example from 3D skeleton joint tracking data'
+
+setup(
+    name="motionrender",
+    version=VERSION,
+    description=DESCRIPTION,
+    long_description=LONG_DESCRIPTION,
+    author="Derek Harter",
+    author_email="Derek.Harter@tamuc.edu",
+    license='GPL-3',
+    packages=find_packages(),
+    install_requires=[],
+    keywords='motion tracking, 3D rendering',
+    classifiers= [
+        "Development Status :: 3 - Alpha",
+        "Intended Audience :: Developers",
+        'License :: OSI Approved :: GPL-3',
+        "Programming Language :: Python :: 3",
+    ]
+)

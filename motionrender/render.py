@@ -57,6 +57,6 @@ def render_animation(time_df, joint_graph, joint_names, figsize=(10,10)):
     # TODO: probably need to set/calculate interval as well not hardcode
     ani = animation.FuncAnimation(
         fig, update_elements, num_frames,
-        fargs=(time_df, ax, joint_graph, joint_names), interval=100)
+        fargs=(time_df, ax, joint_graph, joint_names), interval=50)
 
     return ani

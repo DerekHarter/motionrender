@@ -86,5 +86,6 @@ def plot_joint_frame(joints, joint_graph, joint_names, figsize=(10,10)):
     fig = plt.figure(figsize=figsize)
     ax = fig.add_subplot(projection="3d")
     _ = create_joint_frame(ax, joints, joint_graph, joint_names)
+    ax.view_init(-90, 90)
     return fig
 

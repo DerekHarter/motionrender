@@ -50,3 +50,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   and label as version 0.1
 
 - Push an additional commit to test PyPi package publish procedure.
+
+## [0.1.1] - 2023-05-17
+
+### Added
+
+Two simple bug fixes pushed from first full system test of the modules.
+
+- Set default viewing axis position on frame plots to best visualize
+  test data.
+- Modify interframe interval to better match test data rendering
+  interval.

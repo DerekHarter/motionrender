@@ -5,9 +5,6 @@ Contents
 
 - MotionRender : class for rendering video and figures from motion capture data.
 """
-from .util import load_data, load_time_series, load_joint_graph
-from .plot import create_joint_frame, plot_joint_frame
-from .render import update_elements, render_animation
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 import os

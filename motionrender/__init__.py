@@ -8,6 +8,7 @@ Contents
 from .util import load_data, load_time_series, load_joint_graph
 from .plot import create_joint_frame, plot_joint_frame
 from .render import update_elements, render_animation
+import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 import os
 import pandas as pd
@@ -55,6 +56,12 @@ class MotionRender:
         programatically after creating the MotionCapture instance to
         affect rendering and other properties:
 
+        _ax_elevation default: -90 The 3d axis elevation set for rendered
+            animations.
+        _ax_azimuth  default: 90 The 3d axis azimuth in animations.
+        _ax_roll default: None The default camera roll fo 3d rendered
+            axis.
+
         """
         # save private variables
         self._time_series_file = time_series_file
@@ -79,7 +86,13 @@ class MotionRender:
         self._ax_elevation = -90
         self._ax_azimuth = 90
         self._ax_roll = None
+        self._ax_xlim3d = [-70, 30]
+        self._ax_ylim3d = [-50, 50]
+        self._ax_zlim3d = [100, 200]
+        self._animation_frame_interval = 50
         #self._fig_figsize = (10, 10)
+        self._animation_progress_interval = 500
+
         
     def _load_time_series(self, time_series_file):
         """Private class method _load_time_series
@@ -318,13 +331,141 @@ class MotionRender:
         # change the axis view as asked for
         ax.view_init(elev=self._ax_elevation, azim=self._ax_azimuth, roll=self._ax_roll)
 
-        # TODO: save the resulting figure to asked for file if asked
+        # save the resulting figure to asked for file if asked
         if figure_name:
             try:
                 fig.savefig(figure_name)
             except:
                 raise Exception("Error: MotionRender.render_frame: saving frame to file, possibly bad path? <%s>" % figure_name)
-                
-            
+
         # return the fig object for interactive rendering
         return fig
+
+
+    def _update_elements(self, num, time_df, ax):
+        """Private member function _update_elements
+
+        Update axis elements, method used when rendering animations.  Creates list of
+        updated rendering elements for next frame and returns this list to render
+        an update frame.
+
+        Parameters
+        ----------
+        num - The frame number of the time series positions data being updated.
+        time_df - The time series sequence to be rendered.  We don't use the object
+            private _time_df because we might be rendering a subportion of a movie.
+        ax - The figure axis with 3d elements being plotted into by these methods.
+
+        Returns
+        -------
+        update_elements - returns the list of points / lines of elements updated by the
+            animation rendering process for this next frame.
+        """
+        if num % self._animation_progress_interval == 0:
+            print('processing frame: ', num)
+
+        # extract joint positions to plot
+        joints = time_df.iloc[num]
+        
+        # plot the joints
+        ax.clear()
+        updated_elements = self._create_joint_frame(ax, joints)
+        ax.set_xlim3d([-70, 30])
+        ax.set_ylim3d([-50, 50])
+        ax.set_zlim3d([100, 200])
+
+        # extract experiment response information for this time
+        # the first response where response time is greater than this joint time
+        # is the response block/trial we are in
+        time = joints[0]
+        title = 'Time: %d' % time
+        ax.set_title(title)
+        ax.view_init(self._ax_elevation, self._ax_azimuth)
+
+        return updated_elements
+
+
+    def render_animation(self,
+                         begin_ts=None, end_ts=None,
+                         movie_name=None,  figsize=(10,10)):
+        """Render multiple time frames of our time series joint data into
+        a movie / animation.  The function expects a start and end time stamp,
+        though if not given these default to rendering all frames in the given
+        time series.  The movie is saved to the indicated file name, and
+        matplotlib animation library determins the video file type from the file
+        extension given for the output movie name.  If the movie name is none,
+        then no movie file is saved, instead the animation movie object is
+        returned for dynamic interaction.  Given the joint positions in
+        a time series, render each captured time step as a frame and gather
+        the frames into a movie animation.
+
+        Parameters
+        ----------
+        begin_ts - The starting time stamp of the frame to begin rendering with.
+            If begin_ts is None then the first frame in the time series is used.
+        end_ts - The ending time stamp of the frame to end the rendering with.
+            If end_ts is None then the last frame in the time series is used.
+        movie_name - The name of the file to save the rendered movie 
+            animation into.  If None then the movie animation is not saved to 
+            a file.
+        figsize - Default (10,10) inches, the figure size of the canvas to
+            render the animation elements onto.
+
+        Returns
+        -------
+        animation - the created matplotlib animation object is returned
+            from this api.  This object may be played interactivly or later
+            saved.
+        """
+        # we assume first feature is the time stamp, search for the frame number of
+        # the beginning and ending frames to be rendered for the user
+        time_stamp_name = self._time_df.columns[0]
+        num_frames, _ = self._time_df.shape
+
+        if begin_ts is None:
+            begin_frame = 0
+        else:
+            begin_frame = self._time_df.index[self._time_df[time_stamp_name] == begin_ts]
+            if len(begin_frame) != 1:
+                raise Exception("Error: MotionRender.render_movie: could not find begin time stamp %d" % (begin_ts))
+            begin_frame = begin_frame[0]
+            
+        if end_ts is None:
+            end_frame = num_frames
+        else:
+            end_frame = self._time_df.index[self._time_df[time_stamp_name] == end_ts]
+            if len(end_frame) != 1:
+                raise Exception("Error: MotionRender.render_movie: could not find end time stamp %d" % (end_ts))
+            end_frame = end_frame[0]
+
+        # extract the frames asked for into a new data frame
+        time_df = self._time_df.iloc[begin_frame:end_frame]
+        num_frames, _ = time_df.shape
+
+        # start by plotting the first frame
+        joints = time_df.iloc[0]
+
+        fig = plt.figure(figsize=figsize)
+        ax = fig.add_subplot(projection="3d")
+        elements = self._create_joint_frame(ax, joints)
+
+        # set view limits and positon
+        # TODO: these will need to be discovered or parameterized?
+        ax.set_xlim3d(self._ax_xlim3d)
+        ax.set_ylim3d(self._ax_ylim3d)
+        ax.set_zlim3d(self._ax_zlim3d)
+        ax.view_init(self._ax_elevation, self._ax_azimuth)
+
+        # create animation object
+        ani = animation.FuncAnimation(
+            fig, self._update_elements, num_frames,
+            fargs=(time_df, ax), interval=self._animation_frame_interval)
+
+        # save the resulting movie animation to asked for file if asked
+        if movie_name:
+            try:
+                ani.save(movie_name)
+            except:
+                raise Exception("Error: MotionRender.render_movie: saving movie to file, possibly bad path? <%s>" % (movie_name))
+        
+        return ani

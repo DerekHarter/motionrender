@@ -14,6 +14,7 @@ jobs:
             sudo pip install pipenv
             pipenv install dist/motionrender-0.0.5-py3-none-any.whl
             pipenv install pandas
+            pipenv install matplotlib
             pipenv install pytest
       - run:
           command: | # Run test suite

@@ -26,22 +26,20 @@ def load_data(time_series_file, joint_graph_file):
         time series.
     joint_graph - A data structure used in rendering that defines the connected joint
         graph.
-    N - The number of joints read in from the file.  In the example given in the description,
-        there are N=4 joints (head, neck, leftShoulder, rightShoulder)
     joint_names - A list of the names, in the example these are 
         [head, neck, leftShoulder, rightShoulder]
 
     """
-    time_df, N_time, joint_names_time = load_time_series(time_series_file)
-    joint_graph, N_graph, joint_names_graph = load_joint_graph(joint_graph_file)
+    time_df, joint_names_time = load_time_series(time_series_file)
+    joint_graph, joint_names_graph = load_joint_graph(joint_graph_file)
 
-    if N_time != N_graph:
+    if len(joint_names_time) != len(joint_names_graph):
         raise Exception("ERROR: motionrender: load_time_data: mismatching time series and joint graph data, number of joints are mismatched")
 
     if joint_names_time != joint_names_graph:
         raise Exception("ERROR: motionrender: load_time_data: mismatching time series and joint graph data, names specified for joints do not match")
 
-    return time_df, joint_graph, N_time, joint_names_time
+    return time_df, joint_graph, joint_names_time
 
 
 def load_time_series(time_series_file):
@@ -67,14 +65,13 @@ def load_time_series(time_series_file):
     -------
     time_df - For the moment we use pandas and return a pandas data frame of the loaded
         time series.
-    N - The number of joints read in from the file.  In the example given in the description,
-        there are N=4 joints (head, neck, leftShoulder, rightShoulder)
     joint_names - A list of the names, in the example these are 
         [head, neck, leftShoulder, rightShoulder]
     """
     # do initial load of the data
     time_df = pd.read_csv(time_series_file)
-
+    time_df.columns = time_df.columns.str.strip()
+    
     # determine N the number of joints and check that data has expected format
     N_3d = len(time_df.columns) - 1
     if N_3d % 3 != 0:
@@ -96,7 +93,7 @@ def load_time_series(time_series_file):
         # append joint name to end of list
         joint_names.append(joint_x)
     
-    return time_df, N, joint_names
+    return time_df, joint_names
 
 
 def load_joint_graph(joint_graph_file):
@@ -120,7 +117,6 @@ def load_joint_graph(joint_graph_file):
     -------
     joint_graph - A data structure used in rendering that defines the connected joint
         graph.
-    N - The number of joints N defined in the joint graph
     joint_names - The list of joint names in the graph
     """
     joint_dict = {}
@@ -158,4 +154,4 @@ def load_joint_graph(joint_graph_file):
         # insert the edge into the joint graph structure
         joint_graph.append( (joint1_id, joint2_id) )
 
-    return joint_graph, N, joint_names
+    return joint_graph, joint_names

@@ -2,7 +2,6 @@
 
 Functions to plot a single frame of joint positions on a 3D canvas/axis
 """
-from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 
 

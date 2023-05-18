@@ -41,3 +41,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Added skeleton of render functions.  These return an animation object that can be
   saved as a movie file or other video type.  NOTE: not sure if the animation
   uses ffmpeg on back end or that is not a dependency anymore.
+
+## [0.1.0] - 2023-05-17
+
+### Added
+
+- First significant milestone, minimal functionality for the module.  Mark
+  and label as version 0.1

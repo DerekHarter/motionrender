@@ -39,7 +39,7 @@ def load_data(time_series_file, joint_graph_file):
     if joint_names_time != joint_names_graph:
         raise Exception("ERROR: motionrender: load_time_data: mismatching time series and joint graph data, names specified for joints do not match")
 
-    return time_df, joint_graph, joint_names_time
+   return time_df, joint_graph, joint_names_time
 
 
 def load_time_series(time_series_file):

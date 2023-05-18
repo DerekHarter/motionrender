@@ -22,4 +22,3 @@ def test_good_load():
     assert len(joint_graph) == 3
     assert joint_graph[2] == (1, 3)
     assert joint_names == ['head', 'neck', 'leftShoulder', 'rightShoulder']
-    

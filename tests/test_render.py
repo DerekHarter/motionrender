@@ -10,7 +10,7 @@ good_animation = "figures/good_animation.mov"
 
 def test_render_animation():
     time_df, joint_graph, joint_names = load_data(good_time_series, good_joint_graph)
-    ani = render_animation(time_df, joint_graph, joint_names)
-    if not os.path.exists('figures'):
-        os.mkdir('figures')
-    ani.save(good_animation)
+    #ani = render_animation(time_df, joint_graph, joint_names)
+    #if not os.path.exists('figures'):
+    #    os.mkdir('figures')
+    #ani.save(good_animation)

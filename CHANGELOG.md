@@ -48,3 +48,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - First significant milestone, minimal functionality for the module.  Mark
   and label as version 0.1
+
+- Push an additional commit to test PyPi package publish procedure.

@@ -78,8 +78,6 @@ Major refactor of interface.  Move code to an object called MotionRender
 - added basic object parameters for modifying behavor of plot and
   renders
 
-### Added
-
 - Continuing testing ci workflow issues.  In this commit we test correctly
   updating the version and using a pull request.  We will pull this
   code to a develop branch.  Whenever a commit is made/pulled to this branch,
@@ -87,3 +85,9 @@ Major refactor of interface.  Move code to an object called MotionRender
   then does the test_pypi_publish.  We hopefully now have our password
   issues worked out for twine.
 
+## [1.0.0] - 2023-05-18
+
+### Added
+
+Update version to first 1.0.0 version.  We will publish this
+version to go along with paper submission for this project.

@@ -11,6 +11,6 @@ a set of joints.
 The package provides functions to load in data, help convert it to
 the needed format, and render the data as images and movies.  The
 package relies on Python 3 Matplotlib plotting and movie animations
-using the `mpl_toolkits.mplot3d` and `matplotlib.animation`
+using the and `matplotlib.animation`
 libraries.  This package uses mpeg as a back end renderer to create
 the rendered animations.

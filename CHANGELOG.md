@@ -48,3 +48,42 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - First significant milestone, minimal functionality for the module.  Mark
   and label as version 0.1
+
+- Push an additional commit to test PyPi package publish procedure.
+
+## [0.1.1] - 2023-05-17
+
+### Added
+
+Two simple bug fixes pushed from first full system test of the modules.
+
+- Set default viewing axis position on frame plots to best visualize
+  test data.
+- Modify interframe interval to better match test data rendering
+  interval.
+
+## [0.2.0] - 2023-05-18
+
+### Added
+
+Major refactor of interface.  Move code to an object called MotionRender
+
+- MotionRender object loads data and graph in constructor
+- Use object properties to set figure and render configurations
+- Two main interface method then
+  - render_figure(timestamp, filename, title)
+  - render_animation(timestamp_begin, timestamp_end, filename, title)
+- removed all old regular function api and tests
+- added more testing of functionality of all functions
+- added basic object parameters for modifying behavor of plot and
+  renders
+
+### Added
+
+- Continuing testing ci workflow issues.  In this commit we test correctly
+  updating the version and using a pull request.  We will pull this
+  code to a develop branch.  Whenever a commit is made/pulled to this branch,
+  it should invoke the ci workflow that does a build_test and
+  then does the test_pypi_publish.  We hopefully now have our password
+  issues worked out for twine.
+

@@ -11,8 +11,9 @@ jobs:
             sudo add-apt-repository universe -y
             sudo apt-get update
             sudo apt install -y python3-pip
+            sudo apt install ffmpeg
             sudo pip install pipenv
-            pipenv install dist/motionrender-0.1.0-py3-none-any.whl
+            pipenv install dist/motionrender-0.2.0-py3-none-any.whl
             pipenv install pandas
             pipenv install matplotlib
             pipenv install pytest

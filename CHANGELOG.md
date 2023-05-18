@@ -61,3 +61,20 @@ Two simple bug fixes pushed from first full system test of the modules.
   test data.
 - Modify interframe interval to better match test data rendering
   interval.
+
+## [0.2.0] - 2023-05-18
+
+### Added
+
+Major refactor of interface.  Move code to an object called MotionRender
+
+- MotionRender object loads data and graph in constructor
+- Use object properties to set figure and render configurations
+- Two main interface method then
+  - render_figure(timestamp, filename, title)
+  - render_animation(timestamp_begin, timestamp_end, filename, title)
+- removed all old regular function api and tests
+- added more testing of functionality of all functions
+- added basic object parameters for modifying behavor of plot and
+  renders
+

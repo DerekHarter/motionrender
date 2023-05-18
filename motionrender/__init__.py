@@ -8,6 +8,7 @@ Contents
 from .util import load_data, load_time_series, load_joint_graph
 from .plot import create_joint_frame, plot_joint_frame
 from .render import update_elements, render_animation
+import matplotlib.pyplot as plt
 import os
 import pandas as pd
 import re
@@ -75,8 +76,11 @@ class MotionRender:
         self._time_df.columns = self._time_df.columns.str.strip()
         
         # set class attribute defaults
-
-
+        self._ax_elevation = -90
+        self._ax_azimuth = 90
+        self._ax_roll = None
+        #self._fig_figsize = (10, 10)
+        
     def _load_time_series(self, time_series_file):
         """Private class method _load_time_series
         Load a time series data file.  We expect the time series file to be
@@ -200,3 +204,127 @@ class MotionRender:
             joint_graph.append( (joint1_id, joint2_id) )
 
         return joint_graph, joint_names
+
+
+    def _joint_symbol_lists(self):
+        """Private utility function, given a list of joint names, return
+        list of x,y,z joint names, useful in easily creating rendering
+        of the joint position data.
+
+        Parameters
+        ----------
+        joint_names - A simple list of string symbolic joint names being
+            rendered.
+
+        Returns
+        -------
+        x_joints, y_joints, z_joints - The names of all joints as we expect
+        them to appear in the actual joint dataframe / sequence
+        """
+        x_joints = ['%sX' % name for name in self._joint_names]
+        y_joints = ['%sY' % name for name in self._joint_names]
+        z_joints = ['%sZ' % name for name in self._joint_names]
+
+        return x_joints, y_joints, z_joints
+ 
+
+    def _create_joint_frame(self, ax, joints):
+        """Private member method _create_joint_frame
+        Given a 3D ax in a figure, plot the given joint/skeleton
+        points in the figure axis.
+
+        Parameters
+        ----------
+        ax - a 3D matplotlib axis on which to plot the joint positions
+        joints - A Pandas series or dictionary like object with joint positions
+        as features or keys of the expected names.
+
+        Returns
+        -------
+        fig_elements - A list of line figure elements are returned
+        Implicitly  the joints are plotted on the given figure
+        """
+        x_joints, y_joints, z_joints = self._joint_symbol_lists()
+
+        # pull out the x,y and z positions by joint names
+        x_pos = joints[x_joints]
+        y_pos = joints[y_joints]
+        z_pos = joints[z_joints]
+
+        # first scatter plot the joint positions as blue circle markers
+        fig_elements = [ax.plot(x, y, z, 'bo')[0] for x,y,z in zip(x_pos, y_pos, z_pos)] 
+    
+        # now plot the joint skeleton graph as red lines between joint positions
+        for src, dst in self._joint_graph:
+            line = ax.plot([x_pos[src], x_pos[dst]],
+                           [y_pos[src], y_pos[dst]],
+                           [z_pos[src], z_pos[dst]],
+                           'r')[0]
+            fig_elements.append(line)
+        
+        return fig_elements
+   
+    def render_frame(self, time_stamp, figure_name=None, figsize=(10, 10)):
+        """Render a frame of the time series.  This function expectes
+        the time stamp of the frame to be rendered.  The figure is saved
+        to the indicatef file name, and a matplotlib figure object is
+        also created and returned from this function for dynamic
+        environment visualization like Jupyter Notebooks.
+        Given the joint positions at a point in time, render their
+        joints and the joint graph on a 3D canvas.
+
+        Parameters
+        ----------
+        time_stamp - The time stamp of the frame to be rendered into a
+            figure / file.
+        figure_name - The output file name to render the file into.
+            Default is None, in which case no file is created for you.
+            This parameter is passed to matplotlib savefig, so the
+            file extension will determine the image type, e.g. png, jpg,
+            svg, etc.
+        figsize - default figure size is (10, 10) inches, can be overridden.
+
+        joints - A Pandas series or dictionary like object with joint positions
+            as features or keys of the expected names.
+        joint_graph - The directed graph of the skeleton/connections that defines
+            the joint relationships.
+        joint_names - The symbolic names of the joints in the joint graph
+        joints, joint_graph, joint_names, figsize=(10,10)
+
+        Returns
+        -------
+        fig - This function creates and returns a matplotlib figure object
+            that can be displayed or saved as a single frame image.
+        """
+        # we assume first feature is the time stamp, search for the joints frame
+        # asked to be rendered by user
+        time_stamp_name = self._time_df.columns[0]
+        joints = self._time_df.loc[self._time_df[time_stamp_name] == time_stamp]
+        
+        # Test if didn't find the timestamp
+        if joints.shape[0] != 1:
+            raise Exception("Error: MotionRender.render_frame: did not find the asked for time stamp, time ranges from start=%d to end=%d in this time series" % (self._time_df.iloc[0][0], self._time_df.iloc[-1][0]))
+
+        # need joints as a series
+        joints_series = joints.iloc[0].squeeze()
+        
+        # create figure and 3d axis using matplotlib library
+        fig = plt.figure(figsize=figsize)
+        ax = fig.add_subplot(projection="3d")
+
+        # render the frame
+        _ = self._create_joint_frame(ax, joints_series)
+
+        # change the axis view as asked for
+        ax.view_init(elev=self._ax_elevation, azim=self._ax_azimuth, roll=self._ax_roll)
+
+        # TODO: save the resulting figure to asked for file if asked
+        if figure_name:
+            try:
+                fig.savefig(figure_name)
+            except:
+                raise Exception("Error: MotionRender.render_frame: saving frame to file, possibly bad path? <%s>" % figure_name)
+                
+            
+        # return the fig object for interactive rendering
+        return fig
